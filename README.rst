@@ -57,31 +57,31 @@ Pick your platform and run the block before ``QuickStart`` below.
 
 .. code:: console
 
-   $ sudo apt update
-   $ sudo apt install -y python3 python3-pip python3-venv
-   $ python3 --version        # expect Python 3.9 or newer
-   $ python3 -m pip --version
+   sudo apt update
+   sudo apt install -y python3 python3-pip python3-venv
+   python3 --version        # expect Python 3.9 or newer
+   python3 -m pip --version
 
 **Fedora / RHEL / Rocky / Alma (8+)**
 
 .. code:: console
 
-   $ sudo dnf install -y python3 python3-pip python3-virtualenv
-   $ python3 --version
+   sudo dnf install -y python3 python3-pip python3-virtualenv
+   python3 --version
 
 **Arch / Manjaro**
 
 .. code:: console
 
-   $ sudo pacman -Sy --noconfirm python python-pip
-   $ python3 --version
+   sudo pacman -Sy --noconfirm python python-pip
+   python3 --version
 
 **Alpine (small containers)**
 
 .. code:: console
 
-   $ sudo apk add --no-cache python3 py3-pip py3-virtualenv bash
-   $ python3 --version
+   sudo apk add --no-cache python3 py3-pip py3-virtualenv bash
+   python3 --version
 
 **macOS (Sonoma 14+ and newer)**
 
@@ -91,27 +91,27 @@ bundled; bootstrap it with ``ensurepip``:
 
 .. code:: console
 
-   $ python3 -m ensurepip --upgrade
-   $ python3 -m pip install --user 'klan1-pproxy>=3.0.1'
-   $ # add ~/.local/bin to PATH for the pproxy console script shim
-   $ echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc
+   python3 -m ensurepip --upgrade
+   python3 -m pip install --user 'klan1-pproxy>=3.0.1'
+   # add ~/.local/bin to PATH for the pproxy console script shim
+   echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc
 
 For the C-accelerated ciphers (much faster ``chacha20``), also
 install Homebrew's Python:
 
 .. code:: console
 
-   $ brew install python
-   $ python3 -m pip install --user 'klan1-pproxy[accelerated]'
+   brew install python
+   python3 -m pip install --user 'klan1-pproxy[accelerated]'
 
 **Windows 10/11 (PowerShell)**
 
 .. code:: powershell
 
-   PS> winget install Python.Python.3.12
+   winget install Python.Python.3.12
    # Restart the terminal so python3 / pip3 land on PATH
-   PS> python -m pip install --user klan1-pproxy
-   PS> pproxy
+   python -m pip install --user klan1-pproxy
+   pproxy
 
 **Older Linux (Debian 10, Ubuntu 18.04, CentOS 7) — Python < 3.9**
 
@@ -122,21 +122,21 @@ that don't require ``pyenv``:
 
 .. code:: console
 
-   $ sudo apt install -y software-properties-common
-   $ sudo add-apt-repository -y ppa:deadsnakes/ppa
-   $ sudo apt install -y python3.11 python3.11-venv
-   $ python3.11 -m venv ~/.klan1-pproxy-venv
-   $ ~/.klan1-pproxy-venv/bin/pip install 'klan1-pproxy>=3.0.1'
-   $ ~/.klan1-pproxy-venv/bin/pproxy
+   sudo apt install -y software-properties-common
+   sudo add-apt-repository -y ppa:deadsnakes/ppa
+   sudo apt install -y python3.11 python3.11-venv
+   python3.11 -m venv ~/.klan1-pproxy-venv
+   ~/.klan1-pproxy-venv/bin/pip install 'klan1-pproxy>=3.0.1'
+   ~/.klan1-pproxy-venv/bin/pproxy
 
 *RHEL / CentOS 7 (EPEL + IUS)*:
 
 .. code:: console
 
-   $ sudo yum install -y https://repo.ius.io/ius-release-el7.rpm
-   $ sudo yum install -y python311 python311-pip python311-devel
-   $ python3.11 -m venv ~/.klan1-pproxy-venv
-   $ ~/.klan1-pproxy-venv/bin/pip install 'klan1-pproxy>=3.0.1'
+   sudo yum install -y https://repo.ius.io/ius-release-el7.rpm
+   sudo yum install -y python311 python311-pip python311-devel
+   python3.11 -m venv ~/.klan1-pproxy-venv
+   ~/.klan1-pproxy-venv/bin/pip install 'klan1-pproxy>=3.0.1'
 
 **Troubleshooting**
 

@@ -1,5 +1,35 @@
 # Changelog
 
+## [3.0.3] — 2026-06-24 — Fix `pproxy --version` reports 'unknown' (tag v3.0.3)
+
+### Fixed
+
+- **`pproxy --version` reported "unknown"** when installed via
+  `pip install klan1-pproxy` from PyPI. The version lookup in
+  `pproxy/__doc__.py` hardcoded the distribution name as `pproxy`
+  (the original upstream name), but our fork is published as
+  `klan1-pproxy`, so `importlib.metadata.version('pproxy')` always
+  raised `PackageNotFoundError` and fell back to the literal
+  string `'unknown'`. Refactored the lookup into a helper
+  `_lookup_version(dist_name)` that tries both `klan1-pproxy` and
+  `pproxy` (in that order), and iterates over `importlib.metadata`
+  then `importlib_metadata` for the 3.7 backport case. Verified
+  locally:
+
+  ```
+  $ pproxy --version
+  pproxy 3.0.3
+  ```
+
+### Changed
+
+- **README.rst**: stripped the `$` and `PS>` prompts from every
+  command block in the "Installing Python 3 and pip" section. They
+  were useful for showing the shell prompt in a reading context but
+  broke copy-paste — you had to delete the `$ ` from each line. The
+  section now has clean copy-pasteable blocks. Renders identically
+  through docutils (48 KB -> 53 KB HTML, no new warnings).
+
 ## [3.0.2] — 2026-06-24 — README-only release (tag v3.0.2)
 
 No code change versus 3.0.1. Re-publishes the package with an
