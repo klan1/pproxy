@@ -12,9 +12,27 @@ def find_value(name):
         return data_match.group(1)
     raise RuntimeError(f"Unable to find '{name}' string.")
 
+def resolve_version():
+    """Return the package version.
+
+    Order of preference:
+      1. env var PPROXY_VERSION (used by CI/release scripts)
+      2. the most recent git tag (via setuptools_scm) when run from a git checkout
+      3. the explicit __version__ string in pproxy/__doc__.py (which we
+         hardcode below as a deliberate last-resort fallback)
+    """
+    env_v = os.environ.get("PPROXY_VERSION")
+    if env_v:
+        return env_v
+    try:
+        from setuptools_scm import get_version
+        return get_version()
+    except Exception:
+        return find_value('version')
+
 setup(
     name                = find_value('title'),
-    use_scm_version     = True,
+    version             = resolve_version(),
     description         = find_value('description'),
     long_description    = read('README.rst'),
     url                 = find_value('url'),
