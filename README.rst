@@ -44,6 +44,120 @@ under the name ``klan1-pproxy``. The import name (``pproxy``) and CLI
 See ``CHANGELOG.md`` for the full list of changes versus upstream
 ``pproxy 2.7.9``.
 
+Installing Python 3 and pip
+---------------------------
+
+``klan1-pproxy`` requires Python 3.9 or newer (we drop 3.6/3.7 which
+are end-of-life). Most modern OSes ship a usable Python out of the
+box; the rest is one ``apt`` / ``dnf`` / ``brew`` / ``apk`` away.
+
+Pick your platform and run the block before ``QuickStart`` below.
+
+**Debian / Ubuntu / Raspberry Pi OS / Linux Mint / Pop!_OS**
+
+.. code:: console
+
+   $ sudo apt update
+   $ sudo apt install -y python3 python3-pip python3-venv
+   $ python3 --version        # expect Python 3.9 or newer
+   $ python3 -m pip --version
+
+**Fedora / RHEL / Rocky / Alma (8+)**
+
+.. code:: console
+
+   $ sudo dnf install -y python3 python3-pip python3-virtualenv
+   $ python3 --version
+
+**Arch / Manjaro**
+
+.. code:: console
+
+   $ sudo pacman -Sy --noconfirm python python-pip
+   $ python3 --version
+
+**Alpine (small containers)**
+
+.. code:: console
+
+   $ sudo apk add --no-cache python3 py3-pip py3-virtualenv bash
+   $ python3 --version
+
+**macOS (Sonoma 14+ and newer)**
+
+The system ``python3`` in ``/usr/bin/python3`` is 3.9.6 or newer on
+Sonoma and is enough to install ``klan1-pproxy``. ``pip`` is not
+bundled; bootstrap it with ``ensurepip``:
+
+.. code:: console
+
+   $ python3 -m ensurepip --upgrade
+   $ python3 -m pip install --user 'klan1-pproxy>=3.0.1'
+   $ # add ~/.local/bin to PATH for the pproxy console script shim
+   $ echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc
+
+For the C-accelerated ciphers (much faster ``chacha20``), also
+install Homebrew's Python:
+
+.. code:: console
+
+   $ brew install python
+   $ python3 -m pip install --user 'klan1-pproxy[accelerated]'
+
+**Windows 10/11 (PowerShell)**
+
+.. code:: powershell
+
+   PS> winget install Python.Python.3.12
+   # Restart the terminal so python3 / pip3 land on PATH
+   PS> python -m pip install --user klan1-pproxy
+   PS> pproxy
+
+**Older Linux (Debian 10, Ubuntu 18.04, CentOS 7) — Python < 3.9**
+
+If your box ships Python 3.7 or 3.8 you need a newer one. Two paths
+that don't require ``pyenv``:
+
+*Debian / Ubuntu (deadsnakes PPA)*:
+
+.. code:: console
+
+   $ sudo apt install -y software-properties-common
+   $ sudo add-apt-repository -y ppa:deadsnakes/ppa
+   $ sudo apt install -y python3.11 python3.11-venv
+   $ python3.11 -m venv ~/.klan1-pproxy-venv
+   $ ~/.klan1-pproxy-venv/bin/pip install 'klan1-pproxy>=3.0.1'
+   $ ~/.klan1-pproxy-venv/bin/pproxy
+
+*RHEL / CentOS 7 (EPEL + IUS)*:
+
+.. code:: console
+
+   $ sudo yum install -y https://repo.ius.io/ius-release-el7.rpm
+   $ sudo yum install -y python311 python311-pip python311-devel
+   $ python3.11 -m venv ~/.klan1-pproxy-venv
+   $ ~/.klan1-pproxy-venv/bin/pip install 'klan1-pproxy>=3.0.1'
+
+**Troubleshooting**
+
+* ``python3 reports 3.7; need 3.9+`` — see the "Older Linux" block
+  above. We don't ship a pyenv-style installer because pyenv shims
+  confuse the ``pproxy`` console script on some setups; using a
+  per-user venv is more predictable.
+* ``error: externally-managed-environment`` (PEP 668, modern
+  Debian/Ubuntu/Fedora) — wrap the install in a venv as shown above,
+  or pass ``--break-system-packages`` if you really know what you're
+  doing.
+* ``pproxy: command not found`` after install — the console script
+  lives in ``~/.local/bin`` on macOS / ``<venv>/bin`` on Linux. Add
+  it to your ``PATH`` (the macOS block above does it for ``zsh``).
+* Ciphers feel slow — install the optional C backends: ``pip install
+  'klan1-pproxy[accelerated]'`` pulls in ``pycryptodome`` and
+  ``uvloop``.
+
+Once ``python3 -m pip --version`` works and reports a 3.9+ Python,
+head to ``QuickStart`` below.
+
 QuickStart
 ----------
 
