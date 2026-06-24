@@ -1,20 +1,18 @@
 klan1-pproxy
 ============
 
-|made-with-python| |PyPI-version| |Hit-Count| |Downloads| |Downloads-month| |Downloads-week|
+|made-with-python| |pypi-klan1| |stars| |release| |license|
 
 .. |made-with-python| image:: https://img.shields.io/badge/Made%20with-Python-1f425f.svg
    :target: https://www.python.org/
-.. |PyPI-version| image:: https://badge.fury.io/py/pproxy.svg
+.. |pypi-klan1| image:: https://img.shields.io/pypi/v/klan1-pproxy
    :target: https://pypi.org/project/klan1-pproxy/
-.. |Hit-Count| image:: https://img.shields.io/github/stars/klan1/pproxy.svg?style=social
-   :target: https://pypi.org/project/klan1-pproxy/
-.. |Downloads| image:: https://pepy.tech/badge/pproxy
-   :target: https://pepy.tech/project/klan1-pproxy
-.. |Downloads-month| image:: https://pepy.tech/badge/pproxy/month
-   :target: https://pepy.tech/project/klan1-pproxy
-.. |Downloads-week| image:: https://pepy.tech/badge/pproxy/week
-   :target: https://pepy.tech/project/klan1-pproxy
+.. |stars| image:: https://img.shields.io/github/stars/klan1/pproxy
+   :target: https://github.com/klan1/pproxy
+.. |release| image:: https://img.shields.io/github/release/klan1/pproxy
+   :target: https://github.com/klan1/pproxy
+.. |license| image:: https://img.shields.io/github/license/klan1/pproxy
+   :target: https://github.com/klan1/pproxy
 
 HTTP/HTTP2/HTTP3/Socks4/Socks5/Shadowsocks/SSH/Redirect/Pf/QUIC TCP/UDP asynchronous tunnel proxy implemented in Python3 asyncio.
 
