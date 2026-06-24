@@ -1,6 +1,13 @@
 # Changelog
 
-## [Unreleased] — py3.12-compat branch
+## [3.0.0] — 2026-06-24 — py3.12-compat branch (tag v3.0.0)
+
+### BREAKING CHANGES
+
+- **Dropped support for Python 3.6 and 3.7.** `setup.py` now declares
+  `python_requires='>=3.9'`. Both 3.6 (EOL Dec 2021) and 3.7 (EOL Jun
+  2023) have been unsupported by the Python maintainers for years.
+  Per SemVer 2.0, dropping interpreter support is a major version bump.
 
 ### Fixed
 
@@ -28,9 +35,15 @@
 
 ### Changed
 
-- `setup.py`: bumped `python_requires` from `>=3.6` to `>=3.9`.
-  Updated trove classifiers to declare Python 3.9 through 3.13.
-  Python 3.6 and 3.7 are end-of-life and no longer supported.
+- `setup.py`:
+  - `python_requires` from `>=3.6` to `>=3.9`.
+  - trove classifiers now declare Python 3.9 through 3.13.
+  - Replaced `use_scm_version=True` with an explicit `resolve_version()`
+    helper that prefers the `PPROXY_VERSION` env var, falls back to
+    `setuptools_scm` when run from a git checkout, and finally to the
+    hardcoded `__version__` string in `pproxy/__doc__.py`.
+- `pproxy/__doc__.py`: hardcoded `__version__ = "3.0.0"` as the
+  last-resort fallback for `resolve_version()`.
 
 ### Tested
 
@@ -39,10 +52,48 @@
 | 3.9.25  | ok            | ok              |
 | 3.10.14 | ok            | ok              |
 | 3.11.9  | ok            | ok              |
-| 3.12.4  | ok (was broken before this commit) | ok |
+| 3.12.4  | ok (was broken in 2.7.9) | ok    |
+
+End-to-end verified by installing the freshly built
+`pproxy-3.0.0.tar.gz` sdist into a clean Python 3.12.4 venv:
+
+```
+$ python3 -m venv /tmp/pproxy-test-venv
+$ /tmp/pproxy-test-venv/bin/pip install ./pproxy-3.0.0.tar.gz
+$ /tmp/pproxy-test-venv/bin/python3 -c \
+    "from pproxy.__doc__ import __version__; print(__version__)"
+3.0.0
+$ /tmp/pproxy-test-venv/bin/python3 -m pproxy -l http://127.0.0.1:29998 &
+$ curl -x http://127.0.0.1:29998 http://ifconfig.me
+181.129.245.170
+```
+
+### Installing this fork
+
+```bash
+# from git+https (anonymous read)
+python3 -m pip install \
+  "pproxy @ git+https://github.com/klan1/pproxy.git@py3.12-compat"
+
+# from git+ssh (uses your SSH key; requires write access on the repo)
+python3 -m pip install \
+  "pproxy @ git+ssh://git@github.com/klan1/pproxy.git@py3.12-compat"
+
+# pin the released tag
+python3 -m pip install \
+  "pproxy @ git+https://github.com/klan1/pproxy.git@v3.0.0"
+```
 
 ### Branch
 
-This change lives on the `py3.12-compat` branch. Once reviewed it
-should be merged into `master` and a tag/release cut so `pip install
-pproxy` picks it up.
+This release lives on the `py3.12-compat` branch with the `v3.0.0`
+tag. Once reviewed it should be merged into `master` and the upstream
+maintainers notified (PR against `moreati/pproxy` if they want it).
+
+---
+
+## [2.7.9] — last upstream release (qwj/python-proxy)
+
+Forked at `c3a8446` from `moreati/pproxy`. No changes from upstream
+other than the fork metadata. The `v2.7.9` tag was not created
+because we inherited the upstream version string directly.
