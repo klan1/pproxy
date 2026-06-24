@@ -4,6 +4,11 @@ from . import admin
 
 from .__doc__ import *
 
+# Backwards-compatible event-loop lookup that works on Python 3.6-3.13.
+# See proto._get_loop for details.
+from .proto import _get_loop
+
+
 SOCKET_TIMEOUT = 60
 UDP_LIMIT = 30
 DUMMY = lambda s: s
@@ -211,7 +216,7 @@ class ProxyDirect(object):
                     prot.transport.close()
             prot = lambda: Protocol(data)
             remote = self.destination(host, port)
-            await asyncio.get_event_loop().create_datagram_endpoint(prot, remote_addr=remote)
+            await _get_loop().create_datagram_endpoint(prot, remote_addr=remote)
     def udp_prepare_connection(self, host, port, data):
         return data
     def wait_open_connection(self, host, port, local_addr, family):
@@ -286,7 +291,7 @@ class ProxySimple(ProxyDirect):
                 prot.transport = transport
             def datagram_received(prot, data, addr):
                 asyncio.ensure_future(datagram_handler(prot.transport, data, addr, **vars(self), **args))
-        return asyncio.get_event_loop().create_datagram_endpoint(Protocol, local_addr=(self.host_name, self.port))
+        return _get_loop().create_datagram_endpoint(Protocol, local_addr=(self.host_name, self.port))
     def wait_open_connection(self, host, port, local_addr, family):
         if self.unix:
             return asyncio.open_unix_connection(path=self.bind)
@@ -365,7 +370,7 @@ class ProxyH2(ProxySimple):
         class StreamWriter():
             def __init__(self):
                 self.closed = False
-                self.headers = asyncio.get_event_loop().create_future()
+                self.headers = _get_loop().create_future()
             def get_extra_info(self, key):
                 return writer.get_extra_info(key)
             def write(self, data):
@@ -409,7 +414,7 @@ class ProxyH2(ProxySimple):
             if not self.handshake.done():
                 await self.handshake
         else:
-            self.handshake = asyncio.get_event_loop().create_future()
+            self.handshake = _get_loop().create_future()
             reader, writer = await super().wait_open_connection(None, None, local_addr, family)
             asyncio.ensure_future(self.handler(reader, writer))
             await self.handshake
@@ -453,7 +458,7 @@ class ProxyQUIC(ProxySimple):
             if not self.handshake.done():
                 await self.handshake
         else:
-            self.handshake = asyncio.get_event_loop().create_future()
+            self.handshake = _get_loop().create_future()
             import aioquic.asyncio, aioquic.quic.events
             class Protocol(aioquic.asyncio.QuicConnectionProtocol):
                 def quic_event_received(s, event):
@@ -517,7 +522,7 @@ class ProxyH3(ProxyQUIC):
         class StreamWriter():
             def __init__(self):
                 self.closed = False
-                self.headers = asyncio.get_event_loop().create_future()
+                self.headers = _get_loop().create_future()
             def get_extra_info(self, key):
                 return dict(peername=remote_addr, sockname=remote_addr).get(key)
             def write(self, data):
@@ -586,7 +591,7 @@ class ProxyH3(ProxyQUIC):
                 await self.handshake
         else:
             import aioquic.asyncio
-            self.handshake = asyncio.get_event_loop().create_future()
+            self.handshake = _get_loop().create_future()
             self.quic_egress_acm = aioquic.asyncio.connect(self.host_name, self.port, create_protocol=self.get_protocol(), configuration=self.quicclient)
             conn = await self.quic_egress_acm.__aenter__()
             await self.handshake
@@ -621,7 +626,7 @@ class ProxySSH(ProxySimple):
             if not self.sshconn.done():
                 await self.sshconn
         else:
-            self.sshconn = asyncio.get_event_loop().create_future()
+            self.sshconn = _get_loop().create_future()
             try:
                 import asyncssh
             except Exception:
@@ -924,7 +929,7 @@ def main(args = None):
         print('You must specify --ssl to listen in ssl mode')
         return
     if args.test:
-        asyncio.get_event_loop().run_until_complete(test_url(args.test, args.rserver))
+        asyncio.run(test_url(args.test, args.rserver))
         return
     if not args.listen and not args.ulisten:
         args.listen.append(proxies_by_uri('http+socks4+socks5://:8080/'))
@@ -952,7 +957,16 @@ def main(args = None):
         print('Using uvloop')
     except ModuleNotFoundError:
         pass
-    loop = asyncio.get_event_loop()
+    # Py 3.12+: get_event_loop() raises RuntimeError when there is no
+    # current event loop. Create one explicitly and register it as the
+    # default loop for this thread.
+    try:
+        loop = _get_loop()
+        if loop.is_closed():
+            raise RuntimeError("event loop is closed")
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
     if args.v:
         from . import verbose
         verbose.setup(loop, args)
