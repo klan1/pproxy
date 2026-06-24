@@ -31,13 +31,14 @@ def resolve_version():
         return find_value('version')
 
 setup(
-    name                = find_value('title'),
+    name                = "klan1-pproxy",
     version             = resolve_version(),
-    description         = find_value('description'),
+    description         = "klan1/pproxy fork: HTTP/SOCKS4/SOCKS5/Shadowsocks tunnel proxy, Python 3.9+ compatible.",
     long_description    = read('README.rst'),
-    url                 = find_value('url'),
-    author              = find_value('author'),
-    author_email        = find_value('email'),
+    long_description_content_type = "text/x-rst",
+    url                 = "https://github.com/klan1/pproxy",
+    author              = "Alejandro Trujillo J.",
+    author_email        = "alejo@klan1.com",
     license             = find_value('license'),
     python_requires     = '>=3.9',
     keywords            = find_value('keywords'),
