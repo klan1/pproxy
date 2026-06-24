@@ -1,5 +1,33 @@
 # Changelog
 
+## [3.0.2] — 2026-06-24 — README-only release (tag v3.0.2)
+
+No code change versus 3.0.1. Re-publishes the package with an
+expanded `README.rst` that covers the "fresh box" install path on
+Debian / Ubuntu / Fedora / Arch / Alpine / macOS / Windows, plus an
+"Older Linux" block for systems that still ship Python 3.7 or 3.8
+(deadsnakes PPA on Debian/Ubuntu, IUS on RHEL/CentOS 7). The
+QuickStart section above stayed minimal (`pip3 install klan1-pproxy`)
+on purpose; the new "Installing Python 3 and pip" section picks up
+the slack for users on a fresh Chromebook, server, or container.
+
+## [3.0.1] — 2026-06-24 — README rebuild (tag v3.0.1)
+
+No code change versus 3.0.0. Re-publishes the package with the full
+762-line upstream `README.rst` (the 3.0.0 release shipped a 2.4 KB
+abbreviated version that explained nothing). Edits to the upstream
+README are limited to:
+
+  - Title: `python-proxy` -> `klan1-pproxy`.
+  - Badge URLs: `pproxy.svg` -> `klan1-pproxy` etc., with the
+    `:target:` URLs pointing at the klan1 fork.
+  - Install commands: `pip3 install pproxy` ->
+    `pip3 install klan1-pproxy`.
+  - Added a "Projects" trailer renamed to "Related projects (from
+    upstream pproxy ecosystem)" with a disclaimer that those
+    projects (python-vpn, shadowproxy) are NOT part of klan1-pproxy
+    and are still on the legacy 2.x line.
+
 ## [3.0.0] — 2026-06-24 — py3.12-compat branch (tag v3.0.0)
 
 ### BREAKING CHANGES
