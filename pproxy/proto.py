@@ -1,5 +1,25 @@
 import asyncio, socket, urllib.parse, time, re, base64, hmac, struct, hashlib, io, os
 from . import admin
+
+def _get_loop():
+    """Return the active event loop, falling back to a default one if none is running.
+
+    Python 3.12+ raises RuntimeError when get_event_loop() is called outside a
+    running loop and no default loop has been set. We try get_running_loop()
+    first (works inside coroutines since 3.7) and otherwise look up the thread's
+    current default loop, creating one if needed.
+    """
+    try:
+        return asyncio.get_running_loop()
+    except RuntimeError:
+        pass
+    try:
+        loop = asyncio.get_event_loop_policy().get_event_loop()
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+    return loop
+
 HTTP_LINE = re.compile('([^ ]+) +(.+?) +(HTTP/[^ ]+)$')
 packstr = lambda s, n=1: len(s).to_bytes(n, 'big') + s
 
@@ -217,7 +237,7 @@ class Socks4(BaseProtocol):
         writer.write(b'\x00\x5a' + port.to_bytes(2, 'big') + ip)
         return user, socket.inet_ntoa(ip), port
     async def connect(self, reader_remote, writer_remote, rauth, host_name, port, **kw):
-        ip = socket.inet_aton((await asyncio.get_event_loop().getaddrinfo(host_name, port, family=socket.AF_INET))[0][4][0])
+        ip = socket.inet_aton((await _get_loop().getaddrinfo(host_name, port, family=socket.AF_INET))[0][4][0])
         writer_remote.write(b'\x04\x01' + port.to_bytes(2, 'big') + ip + rauth + b'\x00')
         assert await reader_remote.read_n(2) == b'\x00\x5a'
         await reader_remote.read_n(6)
@@ -627,7 +647,7 @@ def sslwrap(reader, writer, sslcontext, server_side=False, server_hostname=None,
             ssl_reader.feed_eof()
         def connection_lost(self, exc):
             ssl_reader.feed_eof()
-    ssl = asyncio.sslproto.SSLProtocol(asyncio.get_event_loop(), Protocol(), sslcontext, None, server_side, server_hostname, False)
+    ssl = asyncio.sslproto.SSLProtocol(_get_loop(), Protocol(), sslcontext, None, server_side, server_hostname, False)
     class Transport(asyncio.Transport):
         _paused = False
         def __init__(self, extra={}):

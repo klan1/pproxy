@@ -10,9 +10,18 @@ try:
     from setuptools_scm import get_version
     __version__ = get_version()
 except Exception:
+    # Python 3.8+ has importlib.metadata as the standard way to look up an
+    # installed distribution's version. This avoids the pkg_resources
+    # deprecation warning emitted by setuptools>=81.
     try:
-        from pkg_resources import get_distribution
-        __version__ = get_distribution('pproxy').version
+        from importlib.metadata import PackageNotFoundError, version as _pkg_version
+        __version__ = _pkg_version('pproxy')
+    except PackageNotFoundError:
+        try:
+            from importlib_metadata import PackageNotFoundError, version as _pkg_version
+            __version__ = _pkg_version('pproxy')
+        except Exception:
+            __version__ = 'unknown'
     except Exception:
         __version__ = 'unknown'
 
